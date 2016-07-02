@@ -141,6 +141,7 @@ interface HttpResponse
      * Get the protocol used for the response (e.g. HTTP)
      *
      * @return string
+     * @throws HttpException
      */
     public function getProtocol();
 
@@ -148,6 +149,7 @@ interface HttpResponse
      * Get the HTTP protocol version
      *
      * @return string
+     * @throws HttpException
      */
     public function getProtocolVersion();
 
@@ -155,6 +157,7 @@ interface HttpResponse
      * Get the response status code
      *
      * @return integer
+     * @throws HttpException
      */
     public function getStatusCode();
 
@@ -162,6 +165,7 @@ interface HttpResponse
      * Get the response reason phrase: a human readable version of the numeric status code
      *
      * @return string
+     * @throws HttpException
      */
     public function getReasonPhrase();
 

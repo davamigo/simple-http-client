@@ -163,7 +163,7 @@ class CurlHttpResponse implements HttpResponseInterface
     );
 
     /** The default key used by getHeader when no header key found */
-    const DEFAULT_HEADER_KEY = 'default!';
+    const STATUS_LINE_HEADER_KEY = 'Status-Line';
 
     /**
      * CurlHttpResponse constructor.
@@ -316,22 +316,44 @@ class CurlHttpResponse implements HttpResponseInterface
      * Get the response status code
      *
      * @return integer
+     * @throws HttpException
      */
     public function getStatusCode()
     {
-        return $this->getInfo(CURLINFO_HTTP_CODE);
+        $statusCode = $this->getInfo(CURLINFO_HTTP_CODE);
+        if (null === $statusCode) {
+            $headerLines = $this->getHeaderLines();
+            if (empty($headerLines)) {
+                throw new HttpException('HttpClient: No response header detected!');
+            }
+
+            $statusLine = reset($headerLines);
+            $components = explode(' ', $statusLine);
+            if (count($components) < 3) {
+                throw new HttpException('HttpClient: Invalid response header!');
+            }
+
+            $statusCode = intval($components[1]);
+        }
+
+        if (!is_integer($statusCode) || $statusCode < 100 || $statusCode > 599) {
+            throw new HttpException('HttpClient: Invalid response header!');
+        }
+
+        return $statusCode;
     }
 
     /**
      * Get the response reason phrase: a human readable version of the numeric status code
      *
      * @return string|null
+     * @throws HttpException
      */
     public function getReasonPhrase()
     {
         $status = $this->getStatusCode();
-        if (isset(self::$status[$status])) {
-            return self::$status[$status];
+        if (isset(static::$status[$status])) {
+            return static::$status[$status];
         }
 
         return null;
@@ -384,10 +406,10 @@ class CurlHttpResponse implements HttpResponseInterface
         foreach ($headers as $header) {
             $pos = strpos($header, ':');
             if (false === $pos) {
-                $hkey = self::DEFAULT_HEADER_KEY;
+                $hkey = static::STATUS_LINE_HEADER_KEY;
                 $hval = trim($header);
             } else {
-                $hkey = strtolower(trim(substr($header, 0, $pos)));
+                $hkey = trim(substr($header, 0, $pos));
                 $hval = trim(substr($header, 1 + $pos));
             }
 
@@ -413,14 +435,18 @@ class CurlHttpResponse implements HttpResponseInterface
     }
 
     /**
-     * Checks if HTTP Status code is Information (1xx)
+     * Checks if HTTP Status code is Informational (1xx)
      *
      * @return bool
      */
     public function isInformational()
     {
-        $statusCode = $this->getStatusCode();
-        return $statusCode < 200;
+        try {
+            $statusCode = $this->getStatusCode();
+            return ($statusCode >= 100 && $statusCode < 200);
+        } catch (HttpException $exc) {
+            return false;
+        }
     }
 
     /**
@@ -430,8 +456,12 @@ class CurlHttpResponse implements HttpResponseInterface
      */
     public function isSuccessful()
     {
-        $statusCode = $this->getStatusCode();
-        return ($statusCode >= 200 && $statusCode < 300) || $statusCode == 304;
+        try {
+            $statusCode = $this->getStatusCode();
+            return ($statusCode >= 200 && $statusCode < 300) || $statusCode == 304;
+        } catch (HttpException $exc) {
+            return false;
+        }
     }
 
     /**
@@ -441,8 +471,12 @@ class CurlHttpResponse implements HttpResponseInterface
      */
     public function isRedirect()
     {
-        $statusCode = $this->getStatusCode();
-        return $statusCode >= 300 && $statusCode < 400;
+        try {
+            $statusCode = $this->getStatusCode();
+            return $statusCode >= 300 && $statusCode < 400;
+        } catch (HttpException $exc) {
+            return false;
+        }
     }
 
     /**
@@ -452,8 +486,12 @@ class CurlHttpResponse implements HttpResponseInterface
      */
     public function isClientError()
     {
-        $statusCode = $this->getStatusCode();
-        return $statusCode >= 400 && $statusCode < 500;
+        try {
+            $statusCode = $this->getStatusCode();
+            return $statusCode >= 400 && $statusCode < 500;
+        } catch (HttpException $exc) {
+            return false;
+        }
     }
 
     /**
@@ -463,8 +501,12 @@ class CurlHttpResponse implements HttpResponseInterface
      */
     public function isServerError()
     {
-        $statusCode = $this->getStatusCode();
-        return $statusCode >= 500 && $statusCode < 600;
+        try {
+            $statusCode = $this->getStatusCode();
+            return $statusCode >= 500 && $statusCode < 600;
+        } catch (HttpException $exc) {
+            return false;
+        }
     }
 
     /**

@@ -92,7 +92,6 @@ if (!defined('CURLOPT_SOURCE_USERPWD')) {
     define('CURLOPT_SOURCE_USERPWD', null);
 }
 
-
 /**
  * HTTP generic client using cURL
  *
@@ -103,6 +102,9 @@ class CurlHttpClient implements HttpClientInterface
 {
     /** @var string The user agent to use in the calls */
     protected $userAgent = null;
+
+    /** @var CurlProxyInterface The cURL proxy */
+    protected $curl;
 
     /** @var array Valid global options for curl_setopt() */
     static public $opt = array(
@@ -231,13 +233,45 @@ class CurlHttpClient implements HttpClientInterface
     );
 
     /**
+     * CurlHttpClient constructor.
+     *
+     * @param CurlProxyInterface $curl
+     */
+    public function __construct(CurlProxyInterface $curl = null)
+    {
+        $this->curl = $curl ?: new CurlProxy();
+    }
+
+    /**
      * Returns the client internal data (usually the real client object).
      *
      * @return object|array
      */
     public function getClientData()
     {
+        return $this->curl;
+    }
+
+    /**
+     * Set the User-Agent header to be used on all requests from the client
+     *
+     * @param string $userAgent User agent string
+     * @return $this
+     */
+    public function setUserAgent($userAgent)
+    {
+        $this->userAgent = $userAgent;
         return $this;
+    }
+
+    /**
+     * Get the default User-Agent string
+     *
+     * @return string
+     */
+    public function getDefaultUserAgent()
+    {
+        return $this->userAgent;
     }
 
     /**
@@ -335,28 +369,6 @@ class CurlHttpClient implements HttpClientInterface
     }
 
     /**
-     * Set the User-Agent header to be used on all requests from the client
-     *
-     * @param string $userAgent User agent string
-     * @return $this
-     */
-    public function setUserAgent($userAgent)
-    {
-        $this->userAgent = $userAgent;
-        return $this;
-    }
-
-    /**
-     * Get the default User-Agent string
-     *
-     * @return string
-     */
-    public function getDefaultUserAgent()
-    {
-        return $this->userAgent;
-    }
-
-    /**
      * Sends a single request or an array of requests in parallel
      *
      * @param HttpRequestInterface|HttpRequestInterface[] $requests One or more request objects to send
@@ -365,12 +377,12 @@ class CurlHttpClient implements HttpClientInterface
      */
     public function send($requests)
     {
-        if ($requests instanceof CurlHttpRequest) {
+        if ($requests instanceof HttpRequestInterface) {
             return $requests->send();
         } elseif (is_array($requests)) {
             $result = array();
             foreach ($requests as $request) {
-                if ($request instanceof CurlHttpRequest) {
+                if ($request instanceof HttpRequestInterface) {
                     $result[] = $request->send();
                 } else {
                     throw new HttpException(
@@ -380,6 +392,7 @@ class CurlHttpClient implements HttpClientInterface
                 }
             }
             return $result;
+
         } else {
             throw new HttpException(
                 'HttpClient: Invalid request: ' .
@@ -399,21 +412,19 @@ class CurlHttpClient implements HttpClientInterface
      */
     protected function createRequest($uri, $method = 'GET', $headers = null, $body = null, array $options = array())
     {
-        $handler = curl_init();
+        $handler = $this->curl->init();
 
-        $this->setOpt($handler, CURLOPT_URL, $uri);
+        if ($uri) {
+            $this->setOpt($handler, CURLOPT_URL, $uri);
+        }
 
-        switch ($method) {
+        switch (strtolower($method)) {
             case 'get':
-            case 'Get':
-            case 'GET':
                 $this->setOpt($handler, CURLOPT_RETURNTRANSFER, true);
                 $this->setOpt($handler, CURLOPT_POST, false);
                 break;
 
             case 'post':
-            case 'Post':
-            case 'POST':
                 $this->setOpt($handler, CURLOPT_RETURNTRANSFER, true);
                 $this->setOpt($handler, CURLOPT_POST, true);
                 $this->setOpt($handler, CURLOPT_POSTFIELDS, $body);
@@ -449,16 +460,17 @@ class CurlHttpClient implements HttpClientInterface
             $this->setOpt($handler, CURLOPT_USERAGENT, $this->userAgent);
         }
 
-        return new CurlHttpRequest($handler, $uri);
+        return new CurlHttpRequest($handler, $uri, $this->curl);
 
     }
 
     /**
-     * Call curl_setopt
+     * Set an option for a cURL transfer
      *
      * @param resource $handler
      * @param mixed    $option
      * @param mixed    $value
+     * @return bool true on success or false on failure.
      * @throws HttpException
      */
     protected function setOpt($handler, $option, $value)
@@ -470,6 +482,7 @@ class CurlHttpClient implements HttpClientInterface
         } else {
             throw new HttpException('HttpClient: Invalid cURL option ' . $option);
         }
-        curl_setopt($handler, $key, $value);
+
+        return $this->curl->setopt($handler, $key, $value);
     }
 }
