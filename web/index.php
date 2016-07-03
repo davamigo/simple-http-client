@@ -1,40 +1,6 @@
-davamigo/simple-http-client
-===========================
-
-This is a simple PHP HTTP client library implemented with CURL that helps making HTTP requests.
-
-Install
--------
-
-The recommended way to add this library to your PHP projects is through [composer](https://getcomposer.org/).
-
-Add the package and the repository to your **composer.json** file:
-```
-{
-    "require": {
-        "davamigo/simple-http-client": "dev-master"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@github.com:davamigo/simple-http-client.git"
-        }
-    ]
-}
-```
-
-Then update the dependencies:
-```
-$ php composer.phar update
-```
-
-Example
--------
-
-```
 <?php
 
-require_once __DIR__ . 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Use davamigo/simple-http-client library
 use Davamigo\HttpClient\CurlHttpClient\CurlHttpClient;
@@ -60,5 +26,9 @@ if (!$response->isSuccessful()) {
 }
 
 $body = $response->getBody(true);
-var_dump($body);
-```
+$data = json_decode($body, true);
+
+echo '<p>Repository: <a href="' . $data['html_url'] . '">' . $data['full_name'] . '</a></p>';
+echo '<p>Description: ' . $data['description'] . '</p>';
+echo '<p>Language: ' . $data['language'] . '</p>';
+echo '<p>Owner: <a href="' . $data['owner']['html_url'] . '">' . $data['owner']['login'] . '</a></p>';
