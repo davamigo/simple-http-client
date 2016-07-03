@@ -81,4 +81,18 @@ class CurlHttpClientTest extends \PHPUnit_Framework_TestCase
         $result = $client->send($request);
         $this->assertTrue($result->isClientError());
     }
+
+    /**
+     * @test
+     */
+    public function testInvalidUrlThrowsAnException()
+    {
+        $uri = 'http://_thisisanivalidurl_.com';
+
+        $this->setExpectedException('Davamigo\HttpClient\Domain\HttpException');
+
+        $client = new CurlHttpClient();
+        $request = $client->get($uri);
+        $client->send($request);
+    }
 }
