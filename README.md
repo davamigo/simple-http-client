@@ -9,7 +9,7 @@ Install
 The recommended way to add this library to your PHP projects is through [composer](https://getcomposer.org/).
 
 Add the package and the repository to your **composer.json** file:
-```
+```javascript
 {
     "require": {
         "davamigo/simple-http-client": "dev-master"
@@ -24,14 +24,14 @@ Add the package and the repository to your **composer.json** file:
 ```
 
 Then update the dependencies:
-```
+```bash
 $ php composer.phar update
 ```
 
 Example
 -------
 
-```
+```php
 <?php
 
 require_once __DIR__ . 'vendor/autoload.php';
