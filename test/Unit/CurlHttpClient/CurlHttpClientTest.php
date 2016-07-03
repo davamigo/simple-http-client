@@ -6,10 +6,11 @@ use Davamigo\HttpClient\CurlHttpClient\CurlHttpClient;
 use Davamigo\HttpClient\CurlHttpClient\CurlProxyInterface;
 
 /**
- * Class CurlHttpClientTest
+ * Unit test for class CurlHttpClient
  *
  * @package Test\Unit\CurlHttpClient
  * @author davamigo@gmail.com
+ *
  * @group test_unit_http_curl_client
  * @group test_unit_http_curl
  * @group test_unit_http

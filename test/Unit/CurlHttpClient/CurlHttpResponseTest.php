@@ -5,10 +5,11 @@ namespace Test\Unit\CurlHttpClient;
 use Davamigo\HttpClient\CurlHttpClient\CurlHttpResponse;
 
 /**
- * Class CurlHttpResponseTest
+ * Unit test for class CurlHttpResponse
  *
  * @package Test\Unit\CurlHttpClient
  * @author davamigo@gmail.com
+ *
  * @group test_unit_http_curl_response
  * @group test_unit_http_curl
  * @group test_unit_http

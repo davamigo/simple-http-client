@@ -19,7 +19,7 @@ class CurlProxy implements CurlProxyInterface
      */
     public function init($url = null)
     {
-        return curl_init($url);
+        return @curl_init($url);
     }
 
     /**
@@ -32,7 +32,7 @@ class CurlProxy implements CurlProxyInterface
      */
     public function setopt($ch, $option, $value)
     {
-        return curl_setopt($ch, $option, $value);
+        return @curl_setopt($ch, $option, $value);
     }
 
     /**
@@ -43,7 +43,7 @@ class CurlProxy implements CurlProxyInterface
      */
     public function exec($ch)
     {
-        return curl_exec($ch);
+        return @curl_exec($ch);
     }
 
     /**
@@ -51,11 +51,15 @@ class CurlProxy implements CurlProxyInterface
      *
      * @param resource $ch
      * @param int $opt [optional]
-     * @return mixed If opt is given, returns its value as a string. Otherwise, returns an associative array
+     * @return mixed If opt is given, returns its value as a string. Otherwise, returns an associative array.
      */
     public function getinfo($ch, $opt = null)
     {
-        return curl_getinfo($ch, $opt);
+        if (!$opt) {
+            return @curl_getinfo($ch);
+        } else {
+            return @curl_getinfo($ch, $opt);
+        }
     }
 
     /**
@@ -66,7 +70,7 @@ class CurlProxy implements CurlProxyInterface
      */
     public function errno($ch)
     {
-        return curl_errno($ch);
+        return @curl_errno($ch);
     }
 
     /**
@@ -77,7 +81,7 @@ class CurlProxy implements CurlProxyInterface
      */
     function error($ch)
     {
-        return curl_error($ch);
+        return @curl_error($ch);
     }
 
     /**
@@ -88,6 +92,6 @@ class CurlProxy implements CurlProxyInterface
      */
     function close($ch)
     {
-        curl_close($ch);
+        @curl_close($ch);
     }
 }
