@@ -31,10 +31,12 @@ $ php composer.phar update
 Example
 -------
 
+See: [web/index.php](web/index.php):
+
 ```php
 <?php
 
-require_once __DIR__ . 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Use davamigo/simple-http-client library
 use Davamigo\HttpClient\CurlHttpClient\CurlHttpClient;
@@ -59,6 +61,14 @@ if (!$response->isSuccessful()) {
     exit(1);
 }
 
+// Get the body of the response as string
 $body = $response->getBody(true);
-var_dump($body);
+
+// Show the JSON data read from the web service
+$data = json_decode($body, true);
+echo '<p>Repository: <a href="' . $data['html_url'] . '">' . $data['full_name'] . '</a></p>';
+echo '<p>Description: ' . $data['description'] . '</p>';
+echo '<p>Language: ' . $data['language'] . '</p>';
+echo '<p>Owner: <a href="' . $data['owner']['html_url'] . '">' . $data['owner']['login'] . '</a></p>';
+
 ```

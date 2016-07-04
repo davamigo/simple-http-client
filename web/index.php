@@ -25,9 +25,11 @@ if (!$response->isSuccessful()) {
     exit(1);
 }
 
+// Get the body of the response as string
 $body = $response->getBody(true);
-$data = json_decode($body, true);
 
+// Show the JSON data read from the web service
+$data = json_decode($body, true);
 echo '<p>Repository: <a href="' . $data['html_url'] . '">' . $data['full_name'] . '</a></p>';
 echo '<p>Description: ' . $data['description'] . '</p>';
 echo '<p>Language: ' . $data['language'] . '</p>';
