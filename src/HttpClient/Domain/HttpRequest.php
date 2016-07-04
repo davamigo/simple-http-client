@@ -38,6 +38,7 @@ interface HttpRequest
      * @param mixed $option
      * @param mixed $value
      * @return bool true on success or false on failure.
+     * @throws HttpException
      */
     public function setOpt($option, $value);
 

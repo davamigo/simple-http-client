@@ -309,56 +309,244 @@ class CurlHttpClientTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testHttpHeadAlwaysThrowsAnException()
+    public function testHttpHeadReturnsRequestObject()
     {
-        $this->setExpectedException('Davamigo\HttpClient\Domain\HttpException');
+        $uri = 'http://www.test.com/';
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject $curlMock */
+        $curlMock = $this->curl;
+
+        $curlMock
+            ->expects($this->any())
+            ->method('setopt')
+            ->withConsecutive(
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_URL),
+                    $this->equalTo($uri)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_RETURNTRANSFER),
+                    $this->equalTo(true)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_CUSTOMREQUEST),
+                    $this->equalTo('HEAD')
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_NOBODY),
+                    $this->equalTo(true)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_HEADER),
+                    $this->equalTo(true)
+                )
+            );
 
         $client = new CurlHttpClient($this->curl);
-        $client->head();
+        $request = $client->head($uri);
+
+        $this->assertInstanceOf('Davamigo\HttpClient\CurlHttpClient\CurlHttpRequest', $request);
+        $this->assertEquals($uri, $request->getUri());
     }
 
     /**
      * @test
      */
-    public function testHttpDeleteAlwaysThrowsAnException()
+    public function testHttpPutReturnsRequestObject()
     {
-        $this->setExpectedException('Davamigo\HttpClient\Domain\HttpException');
+        $uri = 'http://www.test.com/';
+        $postBody = '{"success":true}';
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject $curlMock */
+        $curlMock = $this->curl;
+
+        $curlMock
+            ->expects($this->any())
+            ->method('setopt')
+            ->withConsecutive(
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_URL),
+                    $this->equalTo($uri)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_RETURNTRANSFER),
+                    $this->equalTo(true)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_CUSTOMREQUEST),
+                    $this->equalTo('PUT')
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_POSTFIELDS),
+                    $this->equalTo($postBody)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_HEADER),
+                    $this->equalTo(true)
+                )
+            );
 
         $client = new CurlHttpClient($this->curl);
-        $client->delete();
+        $request = $client->put($uri, null, $postBody);
+
+        $this->assertInstanceOf('Davamigo\HttpClient\CurlHttpClient\CurlHttpRequest', $request);
+        $this->assertEquals($uri, $request->getUri());
     }
 
     /**
      * @test
      */
-    public function testHttpPutAlwaysThrowsAnException()
+    public function testHttpPatchReturnsRequestObject()
     {
-        $this->setExpectedException('Davamigo\HttpClient\Domain\HttpException');
+        $uri = 'http://www.test.com/';
+        $postBody = '{"success":true}';
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject $curlMock */
+        $curlMock = $this->curl;
+
+        $curlMock
+            ->expects($this->any())
+            ->method('setopt')
+            ->withConsecutive(
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_URL),
+                    $this->equalTo($uri)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_RETURNTRANSFER),
+                    $this->equalTo(true)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_CUSTOMREQUEST),
+                    $this->equalTo('PATCH')
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_POSTFIELDS),
+                    $this->equalTo($postBody)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_HEADER),
+                    $this->equalTo(true)
+                )
+            );
 
         $client = new CurlHttpClient($this->curl);
-        $client->put();
+        $request = $client->patch($uri, null, $postBody);
+
+        $this->assertInstanceOf('Davamigo\HttpClient\CurlHttpClient\CurlHttpRequest', $request);
+        $this->assertEquals($uri, $request->getUri());
     }
 
     /**
      * @test
      */
-    public function testHttpPatchAlwaysThrowsAnException()
+    public function testHttpDeleteReturnsRequestObject()
     {
-        $this->setExpectedException('Davamigo\HttpClient\Domain\HttpException');
+        $uri = 'http://www.test.com/';
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject $curlMock */
+        $curlMock = $this->curl;
+
+        $curlMock
+            ->expects($this->any())
+            ->method('setopt')
+            ->withConsecutive(
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_URL),
+                    $this->equalTo($uri)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_RETURNTRANSFER),
+                    $this->equalTo(true)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_CUSTOMREQUEST),
+                    $this->equalTo('DELETE')
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_HEADER),
+                    $this->equalTo(true)
+                )
+            );
 
         $client = new CurlHttpClient($this->curl);
-        $client->patch();
+        $request = $client->delete($uri);
+
+        $this->assertInstanceOf('Davamigo\HttpClient\CurlHttpClient\CurlHttpRequest', $request);
+        $this->assertEquals($uri, $request->getUri());
     }
 
     /**
      * @test
      */
-    public function testHttpOptionsAlwaysThrowsAnException()
+    public function testHttpOptionsReturnsRequestObject()
+    {
+        $uri = 'http://www.test.com/';
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject $curlMock */
+        $curlMock = $this->curl;
+
+        $curlMock
+            ->expects($this->any())
+            ->method('setopt')
+            ->withConsecutive(
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_URL),
+                    $this->equalTo($uri)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_RETURNTRANSFER),
+                    $this->equalTo(true)
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_CUSTOMREQUEST),
+                    $this->equalTo('OPTIONS')
+                ),
+                array(
+                    $this->anything(),
+                    $this->equalTo(CURLOPT_HEADER),
+                    $this->equalTo(true)
+                )
+            );
+
+        $client = new CurlHttpClient($this->curl);
+        $request = $client->options($uri);
+
+        $this->assertInstanceOf('Davamigo\HttpClient\CurlHttpClient\CurlHttpRequest', $request);
+        $this->assertEquals($uri, $request->getUri());
+    }
+
+    /**
+     * @test
+     */
+    public function testCreateRequestWithInvalidMethodThrowsAnException()
     {
         $this->setExpectedException('Davamigo\HttpClient\Domain\HttpException');
 
         $client = new CurlHttpClient($this->curl);
-        $client->options();
+        $client->createRequest(null, '_invalid_method_');
     }
 
     /**

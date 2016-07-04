@@ -82,7 +82,8 @@ class CurlHttpRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetOptSucceded()
     {
-        $testOption = '_an_option_';
+        $testOption = 'ca_info';
+        $realOption = CURLOPT_CAINFO;
         $testValue = '_some_value_';
 
         /** @var \PHPUnit_Framework_MockObject_MockObject $curlMock */
@@ -93,7 +94,7 @@ class CurlHttpRequestTest extends \PHPUnit_Framework_TestCase
             ->method('setopt')
             ->with(
                 $this->anything(),
-                $this->equalTo($testOption),
+                $this->equalTo($realOption),
                 $this->equalTo($testValue)
             )
             ->will($this->returnValue(true));

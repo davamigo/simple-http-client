@@ -37,12 +37,12 @@ class CurlHttpClientTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testSimplePostSucceeded()
+    public function testSimpleHeadSucceeded()
     {
         $uri = 'http://www.example.com/';
 
         $client = new CurlHttpClient();
-        $request = $client->post($uri);
+        $request = $client->head($uri);
 
         $result = $client->send($request);
         $this->assertTrue($result->isSuccessful());
@@ -51,14 +51,88 @@ class CurlHttpClientTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testMuntiRequestSucceeded()
+    public function testSimplePostSucceeded()
+    {
+        $uri = 'http://www.example.com/';
+
+        $client = new CurlHttpClient();
+        $request = $client->post($uri, null, 'some_data');
+
+        $result = $client->send($request);
+        $this->assertTrue($result->isSuccessful());
+    }
+
+    /**
+     * @test
+     */
+    public function testSimplePutSucceededWithClientError()
+    {
+        $uri = 'http://www.example.com/';
+
+        $client = new CurlHttpClient();
+        $request = $client->put($uri, null, 'some_data');
+
+        $result = $client->send($request);
+        $this->assertTrue($result->isClientError());
+        $this->assertEquals(405, $result->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function testSimplePatchSucceededWithClientError()
+    {
+        $uri = 'http://www.example.com/';
+
+        $client = new CurlHttpClient();
+        $request = $client->patch($uri, null, 'some_data');
+
+        $result = $client->send($request);
+        $this->assertTrue($result->isClientError());
+        $this->assertEquals(405, $result->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function testSimpleDeleteSucceededWithClientError()
+    {
+        $uri = 'http://www.example.com/';
+
+        $client = new CurlHttpClient();
+        $request = $client->delete($uri);
+
+        $result = $client->send($request);
+        $this->assertTrue($result->isClientError());
+        $this->assertEquals(405, $result->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function testSimpleOptionsSucceeded()
+    {
+        $uri = 'http://www.example.com/';
+
+        $client = new CurlHttpClient();
+        $request = $client->options($uri);
+
+        $result = $client->send($request);
+        $this->assertTrue($result->isSuccessful());
+    }
+
+    /**
+     * @test
+     */
+    public function testMultiRequestSucceeded()
     {
         $uri = 'http://www.example.com/';
 
         $client = new CurlHttpClient();
         $requests = array(
+            $client->head($uri),
             $client->get($uri),
-            $client->post($uri),
+            $client->post($uri)
         );
 
         $results = $client->send($requests);

@@ -39,15 +39,15 @@ interface HttpClient
     public function head($uri = null, $headers = null, array $options = array());
 
     /**
-     * Create a DELETE request for the client
+     * Create a POST request for the client
      *
-     * @param string|array    $uri     Resource URI
-     * @param array           $headers HTTP headers
-     * @param string|resource $body    Body to send in the request
-     * @param array           $options Options to apply to the request
+     * @param string|array $uri      Resource URI
+     * @param array        $headers  HTTP headers
+     * @param array|string $postBody POST body. Can be a string or associative array of POST fields
+     * @param array        $options  Options to apply to the request
      * @return HttpRequest
      */
-    public function delete($uri = null, $headers = null, $body = null, array $options = array());
+    public function post($uri = null, $headers = null, $postBody = null, array $options = array());
 
     /**
      * Create a PUT request for the client
@@ -72,15 +72,15 @@ interface HttpClient
     public function patch($uri = null, $headers = null, $body = null, array $options = array());
 
     /**
-     * Create a POST request for the client
+     * Create a DELETE request for the client
      *
-     * @param string|array $uri      Resource URI
-     * @param array        $headers  HTTP headers
-     * @param array|string $postBody POST body. Can be a string or associative array of POST fields
-     * @param array        $options  Options to apply to the request
+     * @param string|array    $uri     Resource URI
+     * @param array           $headers HTTP headers
+     * @param string|resource $body    Body to send in the request
+     * @param array           $options Options to apply to the request
      * @return HttpRequest
      */
-    public function post($uri = null, $headers = null, $postBody = null, array $options = array());
+    public function delete($uri = null, $headers = null, $body = null, array $options = array());
 
     /**
      * Create an OPTIONS request for the client
